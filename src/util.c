@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "keys.h"
+#include "util.h"
 #define FD_STDIN 0
 int menu(void){
     system("clear");

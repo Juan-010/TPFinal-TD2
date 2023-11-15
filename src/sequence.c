@@ -1,7 +1,7 @@
 #include <wiringPi.h>
 #include <unistd.h>
 #include "sequence.h"
-#include "keys.h"
+#include "util.h"
 #define DELTAMS 50
 extern unsigned int delays;
 unsigned int delays = 100;

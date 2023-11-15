@@ -6,7 +6,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include "sequence.h"
-#include "keys.h"
+#include "util.h"
 #define FD_STDIN 0
 #define AD_BASE 120
 #define ADDR 0x48
