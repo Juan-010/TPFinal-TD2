@@ -2,6 +2,5 @@
 #define UTIL_H
 int menu(void);
 int menuSecuencia(void);
-int getArrow(void);
-int getEnter(void);
+int getKey(unsigned int);
 #endif
