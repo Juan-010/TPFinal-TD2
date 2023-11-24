@@ -79,12 +79,7 @@ int getKey(unsigned int key){
         
 }
 
-void setDelay(int newDelay){
-    if (newDelay < 10)
-        delays = 10;
-    else
-        delays = newDelay;
-}
+
 
 int myDelay(enum mode mode, int serial_port){
     if(mode == LOCAL){
@@ -99,7 +94,7 @@ int myDelay(enum mode mode, int serial_port){
 
         if (key == 5)
                 return 1;
-        setDelay((key == 1) ? delays + DELTAMS : (key == 2) ? delays - DELTAMS : delays);
+        delays = setDelay((key == 1) ? delays + DELTAMS : (key == 2) ? delays - DELTAMS : delays);
         delay(delays);
         return 0;
 }
