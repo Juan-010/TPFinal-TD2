@@ -1,6 +1,6 @@
 #ifndef SEQUENCE_H
 #define SEQUENCE_H
-enum mode {LOCAL, REMOTE};
+#include "util.h"
 //Requeridos por cátedra
 void ledsOff(void);
 int autoFantastico(enum mode, int);

@@ -1,8 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <wiringPi.h>
+#include <wiringSerial.h>
 #include "util.h"
 #define FD_STDIN 0
+
+#define DELTAMS 20
+extern unsigned int delays;
+unsigned int delays = 100;
+int key;
+//Menues
+
 int menu(void){
     system("clear");
     puts("Bienvenido al Trabajo práctico Final de Técnicas Digitales 2");
@@ -42,6 +51,8 @@ int menuSecuencia(void){
     return choice;
 }
 
+
+//Utilidades
 int getKey(unsigned int key){
     switch(key){
         case 0x415b1b: //ARROW UP
@@ -64,4 +75,30 @@ int getKey(unsigned int key){
     }
         
 }
+
+void setDelay(int newDelay){
+    if (newDelay < 10)
+        delays = 10;
+    else
+        delays = newDelay;
+}
+
+int myDelay(enum mode mode, int serial_port){
+    if(mode == LOCAL){
+            read(0, &key, 3);
+            key = getKey(key);  
+        }
+        if(mode == REMOTE){
+            key = 0;
+            if (serialDataAvail(serial_port))
+                key = serialGetchar(serial_port);
+        }
+
+        if (key == 5)
+                return 1;
+        setDelay((key == 1) ? delays + DELTAMS : (key == 2) ? delays - DELTAMS : delays);
+        delay(delays);
+        return 0;
+}
+
 
