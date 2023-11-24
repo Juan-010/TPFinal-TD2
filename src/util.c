@@ -1,8 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
+#include <wiringPi.h>
+#include <wiringSerial.h>
 #include "util.h"
+#include <termios.h>
+
 #define FD_STDIN 0
+
+#define DELTAMS 20
+extern unsigned int delays;
+unsigned int delays = 100;
+int key;
+//Menues
+
 int menu(void){
     system("clear");
     puts("Bienvenido al Trabajo práctico Final de Técnicas Digitales 2");
@@ -42,6 +54,8 @@ int menuSecuencia(void){
     return choice;
 }
 
+
+//Utilidades
 int getKey(unsigned int key){
     switch(key){
         case 0x415b1b: //ARROW UP
@@ -64,4 +78,60 @@ int getKey(unsigned int key){
     }
         
 }
+
+
+
+int myDelay(enum mode mode, int serial_port){
+    if(mode == LOCAL){
+            read(0, &key, 3);
+            key = getKey(key);  
+        }
+        if(mode == REMOTE){
+            key = 0;
+            if (serialDataAvail(serial_port))
+                key = serialGetchar(serial_port);
+        }
+
+        if (key == 5)
+                return 1;
+        delays = setDelay((key == 1) ? delays + DELTAMS : (key == 2) ? delays - DELTAMS : delays);
+        delay(delays);
+        return 0;
+}
+
+int login (char *password){
+    int ret_value = 0;
+    struct termios login_old, login_new;
+    tcgetattr(FD_STDIN, &login_old); // lee atributos del teclado
+    login_new = login_old;
+    login_new.c_lflag &= ~(ECHO | ICANON); // anula entrada canónica y eco
+    login_new.c_cc[VMIN]=1;			//setea el minimo numero de caracteres que espera read()
+	login_new.c_cc[VTIME] = 0;			//setea tiempo maximo de espera de caracteres que lee read()
+    tcsetattr(FD_STDIN,TCSANOW,&login_new);
+
+   int tries = 3;
+   char key = 0, attempt[6] = {0};
+   while (tries > 0){
+    printf("Ingrese su password de 5 dígitos: ");
+    int i = 0;
+    while((key = getchar()) != 10){
+        if (i==5) break;  
+        attempt[i] = key;
+        printf("*");
+        i++;
+    }
+    printf("\n");
+    if (!strcmp(attempt,password)){
+        ret_value = 1;
+        break;
+    }
+    else{
+        printf("Password no válida\n");
+        tries--;}
+    }
+   
+   tcsetattr(FD_STDIN, TCSANOW, &login_old); // actualiza con los valores previos 
+   return ret_value;
+}
+
 
