@@ -1,13 +1,16 @@
 #include <wiringPi.h>
+#include <stdio.h>
+#include <wiringSerial.h>
 #include <unistd.h>
 #include "sequence.h"
-#include "keys.h"
-#define DELTAMS 50
+#include "util.h"
+#define DELTAMS 20
 extern unsigned int delays;
 unsigned int delays = 100;
 
 const int leds[8] = {0,1,2,3,4,5,6,7};
-int arrow;
+int key;
+
 int mat_laCarrera[16][8]={
     {0},
     {1,0,0,0,0,0,0,0},
@@ -97,15 +100,24 @@ void setDelay(int newDelay){
 }
 
 //Requeridos por cátedra
-int autoFantastico(void){
+int autoFantastico(enum mode mode, int serial_port){
     for(int i=0;i<8;i++)
     {
         digitalWrite(leds[i],HIGH);
+        
+        if(mode == LOCAL){
+            read(0, &key, 3);
+            key = getKey(key);  
+        }
+        if(mode == REMOTE){
+            key = 0;
+            if (serialDataAvail(serial_port))
+                key = serialGetchar(serial_port);
+        }
 
-        arrow = getArrow();
-        if (arrow == 5)
-            return 1;
-        setDelay((arrow == 1) ? delays + DELTAMS : (arrow == 2) ? delays - DELTAMS : delays);
+        if (key == 5)
+                return 1;
+        setDelay((key == 1) ? delays + DELTAMS : (key == 2) ? delays - DELTAMS : delays);
         delay(delays);
         digitalWrite(leds[i],LOW);
     }
@@ -113,24 +125,43 @@ int autoFantastico(void){
     for(int j=7;j>=0;j--)
     {
         digitalWrite(leds[j],HIGH);
-        arrow = getArrow();
-        if (arrow == 5)
+        
+        if(mode == LOCAL){
+            read(0, &key, 3);
+            key = getKey(key);  
+        }
+        if(mode == REMOTE){
+            key = 0;
+            if (serialDataAvail(serial_port))
+                key = serialGetchar(serial_port);
+        }
+        
+        if (key == 5)
             return 1;
-        setDelay((arrow == 1) ? delays + DELTAMS : (arrow == 2) ? delays - DELTAMS : delays);
+        setDelay((key == 1) ? delays + DELTAMS : (key == 2) ? delays - DELTAMS : delays);
         delay(delays);
         digitalWrite(leds[j],LOW);
     }
     return 0;
 }
-int elChoque(void){
+int elChoque(enum mode mode, int serial_port){
     for(int i=0; i<8; i++){
         digitalWrite(leds[i], HIGH);
         digitalWrite(leds[7-i], HIGH);
 
-        arrow = getArrow();
-        if (arrow == 5)
+        if(mode == LOCAL){
+            read(0, &key, 3);
+            key = getKey(key);  
+        }
+        if(mode == REMOTE){
+            key = 0;
+            if (serialDataAvail(serial_port))
+                key = serialGetchar(serial_port);
+        }
+        
+        if (key == 5)
             return 1;
-        setDelay((arrow == 1) ? delays + DELTAMS : (arrow == 2) ? delays - DELTAMS : delays);
+        setDelay((key == 1) ? delays + DELTAMS : (key == 2) ? delays - DELTAMS : delays);
         delay(delays);
 
         digitalWrite(leds[i], LOW);
@@ -138,69 +169,117 @@ int elChoque(void){
     }
     return 0;
 }
-int laApilada(void){
+int laApilada(enum mode mode, int serial_port){
     for(int i=0;i<37;i++){
         for(int j = 0; j<8; j++)
             digitalWrite(leds[j], mat_laApilada[i][j]);
-        arrow = getArrow();
-        if (arrow == 5)
+        if(mode == LOCAL){
+            read(0, &key, 3);
+            key = getKey(key);  
+        }
+        if(mode == REMOTE){
+            key = 0;
+            if (serialDataAvail(serial_port))
+                key = serialGetchar(serial_port);
+        }
+        
+        if (key == 5)
             return 1;
-        setDelay((arrow == 1) ? delays + DELTAMS : (arrow == 2) ? delays - DELTAMS : delays);
+        setDelay((key == 1) ? delays + DELTAMS : (key == 2) ? delays - DELTAMS : delays);
         delay(delays);
     }
     return 0;
 }
-int laCarrera(void){
+int laCarrera(enum mode mode, int serial_port){
     for(int i=0;i<16;i++){
         for(int j = 0; j<8; j++)
             digitalWrite(leds[j], mat_laCarrera[i][j]);
-        arrow = getArrow();
-        if (arrow == 5)
+        if(mode == LOCAL){
+            read(0, &key, 3);
+            key = getKey(key);  
+        }
+        if(mode == REMOTE){
+            key = 0;
+            if (serialDataAvail(serial_port))
+                key = serialGetchar(serial_port);
+        }
+        
+        if (key == 5)
             return 1;
-        setDelay((arrow == 1) ? delays + DELTAMS : (arrow == 2) ? delays - DELTAMS : delays);
+        setDelay((key == 1) ? delays + DELTAMS : (key == 2) ? delays - DELTAMS : delays);
         delay(delays);
     }
     return 0;
 }
 
 //Definidos por grupo
-int alternado(void){
+int alternado(enum mode mode, int serial_port){
     for(int i=0; i<8; i+=2)
         digitalWrite(leds[i], HIGH);
     for(int i=1; i<8; i+=2)
         digitalWrite(leds[i], LOW);
 
-    arrow = getArrow();
-        if (arrow == 5)
-            return 1;
-        setDelay((arrow == 1) ? delays + DELTAMS : (arrow == 2) ? delays - DELTAMS : delays);
-        delay(delays);
+    if(mode == LOCAL){
+        read(0, &key, 3);
+        key = getKey(key);  
+    }
+    if(mode == REMOTE){
+        key = 0;
+        if (serialDataAvail(serial_port))
+            key = serialGetchar(serial_port);
+    }
+        
+    if (key == 5)
+        return 1;
+    setDelay((key == 1) ? delays + DELTAMS : (key == 2) ? delays - DELTAMS : delays);
+    delay(delays);
 
     for(int i=0; i<8; i+=2)
         digitalWrite(leds[i], LOW);
     for(int i=1; i<8; i+=2)
         digitalWrite(leds[i], HIGH);
 
-    arrow = getArrow();
-        if (arrow == 5)
-            return 1;
-        setDelay((arrow == 1) ? delays + DELTAMS : (arrow == 2) ? delays - DELTAMS : delays);
-        delay(delays);
-return 0;}
-int cortina(void){
+    if(mode == LOCAL){
+            read(0, &key, 3);
+            key = getKey(key);  
+    }
+    if(mode == REMOTE){
+        key = 0;
+        if (serialDataAvail(serial_port))
+            key = serialGetchar(serial_port);
+    }
+        
+    if (key == 5)
+        return 1;
+    setDelay((key == 1) ? delays + DELTAMS : (key == 2) ? delays - DELTAMS : delays);
+    delay(delays);
+    return 0;
+}
+
+int cortina(enum mode mode, int serial_port){
     for(int i=0;i<16;i++){
         for(int j = 0; j<8; j++)
             digitalWrite(leds[j], mat_cortina[i][j]);
 
-        arrow = getArrow();
-        if (arrow == 5)
+        if(mode == LOCAL){
+            read(0, &key, 3);
+            key = getKey(key);  
+        }
+        if(mode == REMOTE){
+            key = 0;
+            if (serialDataAvail(serial_port))
+                key = serialGetchar(serial_port);
+        }
+        
+        if (key == 5)
             return 1;
-        setDelay((arrow == 1) ? delays + DELTAMS : (arrow == 2) ? delays - DELTAMS : delays);
+        setDelay((key == 1) ? delays + DELTAMS : (key == 2) ? delays - DELTAMS : delays);
         delay(delays);
     }
     return 0;
 }
-int sombras(void){
+
+int sombras(enum mode mode, int serial_port){
     for(int i = 0; i<8; i++){
         digitalWrite(leds[i], HIGH);
     }
@@ -208,10 +287,19 @@ int sombras(void){
     {
         digitalWrite(leds[i],LOW);
 
-       arrow = getArrow();
-        if (arrow == 5)
+        if(mode == LOCAL){
+            read(0, &key, 3);
+            key = getKey(key);  
+        }
+        if(mode == REMOTE){
+            key = 0;
+            if (serialDataAvail(serial_port))
+                key = serialGetchar(serial_port);
+        }
+        
+        if (key == 5)
             return 1;
-        setDelay((arrow == 1) ? delays + DELTAMS : (arrow == 2) ? delays - DELTAMS : delays);
+        setDelay((key == 1) ? delays + DELTAMS : (key == 2) ? delays - DELTAMS : delays);
         delay(delays);
 
         digitalWrite(leds[i],HIGH);
@@ -221,10 +309,19 @@ int sombras(void){
     {
         digitalWrite(leds[j],LOW);
 
-        arrow = getArrow();
-        if (arrow == 5)
+        if(mode == LOCAL){
+            read(0, &key, 3);
+            key = getKey(key);  
+        }
+        if(mode == REMOTE){
+            key = 0;
+            if (serialDataAvail(serial_port))
+                key = serialGetchar(serial_port);
+        }
+        
+        if (key == 5)
             return 1;
-        setDelay((arrow == 1) ? delays + DELTAMS : (arrow == 2) ? delays - DELTAMS : delays);
+        setDelay((key == 1) ? delays + DELTAMS : (key == 2) ? delays - DELTAMS : delays);
         delay(delays);
 
         digitalWrite(leds[j],HIGH);
@@ -232,15 +329,24 @@ int sombras(void){
     return 0;
 }
 
-int shimmer(void){
+int shimmer(enum mode mode, int serial_port){
     for(int i=0;i<16;i++){
         for(int j = 0; j<8; j++)
             digitalWrite(leds[j], mat_shimmer[i][j]);
 
-        arrow = getArrow();
-        if (arrow == 5)
+        if(mode == LOCAL){
+            read(0, &key, 3);
+            key = getKey(key);  
+        }
+        if(mode == REMOTE){
+            key = 0;
+            if (serialDataAvail(serial_port))
+                key = serialGetchar(serial_port);
+        }
+        
+        if (key == 5)
             return 1;
-        setDelay((arrow == 1) ? delays + DELTAMS : (arrow == 2) ? delays - DELTAMS : delays);
+        setDelay((key == 1) ? delays + DELTAMS : (key == 2) ? delays - DELTAMS : delays);
         delay(delays);
     }
     return 0;

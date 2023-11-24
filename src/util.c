@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "keys.h"
+#include "util.h"
 #define FD_STDIN 0
 int menu(void){
     system("clear");
@@ -42,27 +42,26 @@ int menuSecuencia(void){
     return choice;
 }
 
-int getArrow(void){
-    unsigned int dat;
-    read(0, &dat, 3);
-        switch(dat){
-            case 0x415b1b:
-            return 1;
+int getKey(unsigned int key){
+    switch(key){
+        case 0x415b1b: //ARROW UP
+        return 1;
 
-            case 0x425b1b:
-            return 2;
+        case 0x425b1b: //ARROW DOWN
+        return 2;
 
-            case 0x435b1b:
-            return 3;
+        case 0x435b1b: //ARROW LEFT
+        return 3;
 
-            case 0x445b1b:
-            return 4;
+        case 0x445b1b: //ARROW RIGHT
+        return 4;
 
-            default:
-            if ((dat & 0x00000000FF) == 0x0a)
-                return 5;
-            else
-                return 0;
-        }
+        default:
+        if ((key & 0x00000000FF) == 0x0a)
+            return 5; //ENTER
+        else
+            return 0; //NO KEY
+    }
         
 }
+
