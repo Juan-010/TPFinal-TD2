@@ -13,8 +13,10 @@
 #define ADDR 0x48
 
 extern unsigned int delays;
-
+char *pass = "12345";
 int main(void){
+    if(!login(pass))
+        return(1);
     wiringPiSetup();
     ads1115Setup(AD_BASE, ADDR);		//configuracion del ADC	
     for(int i=0;i<8;i++)
