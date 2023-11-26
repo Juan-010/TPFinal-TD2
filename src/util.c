@@ -109,8 +109,7 @@ int myDelay(enum mode mode, int serial_port)
 
     if (key == 3)
         return 1;
-    delays = setDelay((key == 1) ? delays + DELTAMS : (key == 2) ? delays - DELTAMS
-                                                                 : delays);
+    delays = setDelay((key == 1) ? delays - DELTAMS : (key == 2) ? delays + DELTAMS : delays);
     delay(delays);
     return 0;
 }
