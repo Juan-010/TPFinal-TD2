@@ -100,6 +100,9 @@ int mat_cortina2[15][8] = {
     {0, 0, 0, 1, 1, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0}};
 
+// Secuencias
+
+// Apaga todos los leds
 void ledsOff(void)
 {
     for (int i = 0; i < 8; i++)
