@@ -7,4 +7,5 @@ int getKey(unsigned int);
 int setDelay(int); //hacer en ARM
 int myDelay(enum mode, int);
 int login(char *);
+void setMinChar(int);
 #endif

@@ -40,8 +40,7 @@ int main(void){
         switch(choice){
             case 1:
                 choice = menuSecuencia();
-                t_new.c_cc[VMIN]=0;
-                tcsetattr(FD_STDIN,TCSANOW,&t_new);
+                setMinChar(0);
                 system("clear");
                 switch(choice){
                     case 1:
@@ -95,9 +94,9 @@ int main(void){
                     break;
 
                     case 6:
-                        puts("Cortina (Enter para Salir)");
+                        puts("Cortina 1 (Enter para Salir)");
                         while(1){
-                            if (cortina(LOCAL, 0) == 1){
+                            if (cortina1(LOCAL, 0) == 1){
                                 ledsOff();
                                 break;
                             }
@@ -105,6 +104,16 @@ int main(void){
                     break;
 
                     case 7:
+                        puts("Cortina 2 (Enter para Salir)");
+                        while(1){
+                            if (cortina2(LOCAL, 0) == 1){
+                                ledsOff();
+                                break;
+                            }
+                        }
+                    break;
+
+                    case 8:
                         puts("Sombras (Enter para Salir)");
                         while(1){
                             if (sombras(LOCAL, 0) == 1){
@@ -114,35 +123,25 @@ int main(void){
                         }
                     break;
 
-                    case 8:
-                        puts("Shimmer (Enter para Salir)");
-                        while(1){
-                            if (shimmer(LOCAL, 0) == 1){
-                                ledsOff();
-                                break;
-                            }
-                        }
-                    break;
-
                     default: 
                         puts("Opción inválida");
                 }
-                t_new.c_cc[VMIN]=1;
-                tcsetattr(FD_STDIN,TCSANOW,&t_new);
+                setMinChar(1);
                 break;
 
             case 2:
-                t_new.c_cc[VMIN]=0;
-                tcsetattr(FD_STDIN,TCSANOW,&t_new);
+                setMinChar(0);
                 while(key != 10){
-                    system("clear");
-                    puts("Definir Velocidad Inicial (Enter para Salir)");
-                    delays = (unsigned int)(((float) analogRead(AD_BASE) / 32768) * 1000);
-                    printf("Velocidad Inicial: %d ms\n", delays);
+                    int reading = analogRead(AD_BASE);
+                    if(reading != delays){
+                        system("clear");
+                        puts("Definir Velocidad Inicial (Enter para Salir)");
+                        delays = (unsigned int)(((float) analogRead(AD_BASE) / 32768) * 1000);
+                        printf("Velocidad Inicial: %d ms\n", delays);
+                    }
                     read(0, &key, 1);
                 }
-                t_new.c_cc[VMIN]=1;
-                tcsetattr(FD_STDIN,TCSANOW,&t_new);
+                setMinChar(1);
                 key = 0;
                 break;
 
@@ -150,8 +149,7 @@ int main(void){
                 system("clear");
                 unsigned char serialDat;
                 puts("Modo de control remoto. Presione ENTER para salir.");
-                t_new.c_cc[VMIN]=0;
-                tcsetattr(FD_STDIN,TCSANOW,&t_new);
+                setMinChar(0);
                 while(key != 10){
                     if(serialDataAvail(serial_port)){
                         serialDat = serialGetchar(serial_port);
@@ -204,7 +202,7 @@ int main(void){
                             case 16:
                                 while(key!=10){
                                     read(0, &key, 1);
-                                    if (cortina(REMOTE, serial_port) == 1){
+                                    if (cortina1(REMOTE, serial_port) == 1){
                                         ledsOff();
                                         break;
                                     }
@@ -213,29 +211,27 @@ int main(void){
                             case 17:
                                 while(key!=10){
                                     read(0, &key, 1);
+                                    if (cortina2(REMOTE, serial_port) == 1){
+                                        ledsOff();
+                                        break;
+                            case 18:
+                                while(key!=10){
+                                    read(0, &key, 1);
                                     if (sombras(REMOTE, serial_port) == 1){
                                         ledsOff();
                                         break;
                                     }
                                 }
                                 break;
-                            case 18:
-                                while(key!=10){
-                                    read(0, &key, 1);
-                                    if (shimmer(REMOTE, serial_port) == 1){
-                                        ledsOff();
-                                        break;
+                            
                                     }
                                 }
                                 break;
-                            default:
-                            ;
                         }
                     }
                     read(0, &key, 1);
                 }
-                t_new.c_cc[VMIN]=1;
-                tcsetattr(FD_STDIN,TCSANOW,&t_new);
+                setMinChar(1);
                 key = 0;
                 break;
             case 4:

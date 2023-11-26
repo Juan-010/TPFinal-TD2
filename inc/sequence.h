@@ -10,7 +10,7 @@ int laCarrera(enum mode, int);
 
 //Definidos por grupo
 int alternado(enum mode, int);
-int cortina(enum mode, int);
+int cortina1(enum mode, int);
 int sombras(enum mode, int);
-int shimmer(enum mode, int);
+int cortina2(enum mode, int);
 #endif // SEQUENCE_H

@@ -15,6 +15,9 @@ unsigned int delays = 100;
 int key;
 //Menues
 
+// Función para el menú principal
+// Parámetros: Ninguno
+// Valor de retorno: Entero que representa la opción elegida
 int menu(void){
     system("clear");
     puts("Bienvenido al Trabajo práctico Final de Técnicas Digitales 2");
@@ -33,6 +36,10 @@ int menu(void){
     return choice;
 }
 
+
+// Función para el menú de selección de secuencia
+// Parámetros: Ninguno
+// Valor de retorno: Entero que representa la opción elegida
 int menuSecuencia(void){
     system("clear");
     puts("Bienvenido al Trabajo práctico Final de Técnicas Digitales 2");
@@ -42,9 +49,10 @@ int menuSecuencia(void){
     puts("(3) La Apilada");
     puts("(4) La Carrera");
     puts("(5) Alternado");
-    puts("(6) Cortina");
-    puts("(7) Sombras");
-    puts("(8) Shimmer");
+    puts("(6) Cortina 1");
+    puts("(7) Cortina 2");
+    puts("(8) Sombras");
+    
     char choice; 
     do{
     read(FD_STDIN, &choice, 1);
@@ -56,6 +64,7 @@ int menuSecuencia(void){
 
 
 //Utilidades
+
 int getKey(unsigned int key){
     switch(key){
         case 0x415b1b: //ARROW UP
@@ -64,17 +73,11 @@ int getKey(unsigned int key){
         case 0x425b1b: //ARROW DOWN
         return 2;
 
-        case 0x435b1b: //ARROW LEFT
-        return 3;
-
-        case 0x445b1b: //ARROW RIGHT
-        return 4;
-
         default:
-        if ((key & 0x00000000FF) == 0x0a)
-            return 5; //ENTER
+        if ((key & 0x000000FF) == 0x0a) //ENTER
+            return 3;
         else
-            return 0; //NO KEY
+            return 0; //OTHER
     }
         
 }
@@ -92,7 +95,7 @@ int myDelay(enum mode mode, int serial_port){
                 key = serialGetchar(serial_port);
         }
 
-        if (key == 5)
+        if (key == 3)
                 return 1;
         delays = setDelay((key == 1) ? delays + DELTAMS : (key == 2) ? delays - DELTAMS : delays);
         delay(delays);
@@ -132,6 +135,13 @@ int login (char *password){
    
    tcsetattr(FD_STDIN, TCSANOW, &login_old); // actualiza con los valores previos 
    return ret_value;
+}
+
+void setMinChar(int minChar){
+    struct termios term;
+    tcgetattr(FD_STDIN, &term);
+    term.c_cc[VMIN] = minChar;
+    tcsetattr(FD_STDIN, TCSANOW, &term);
 }
 
 
