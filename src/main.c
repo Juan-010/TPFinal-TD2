@@ -17,7 +17,7 @@ extern unsigned int delays;
 char *pass = "12345";
 
 int main(void)
-{   
+{
     // Login
     if (!login(pass)) // si login devuelve 0, termina el programa
         exit(EXIT_FAILURE);
@@ -265,36 +265,36 @@ int main(void)
                             {
                                 ledsOff();
                                 break;
-                            case 18:
-                                while (key != ENTER)
-                                {
-                                    read(FD_STDIN, &key, 1);
-                                    if (sombras(REMOTE, serial_port) == 1)
-                                    {
-                                        ledsOff();
-                                        break;
-                                    }
-                                }
+                            }
+                        }
+                        break;
+                    case 18:
+                        while (key != ENTER)
+                        {
+                            read(FD_STDIN, &key, 1);
+                            if (sombras(REMOTE, serial_port) == 1)
+                            {
+                                ledsOff();
                                 break;
                             }
                         }
                         break;
-                    }
-                }
+                    } // Switch SerialDat
+                }     // if serialDataAvail
                 read(FD_STDIN, &key, 1);
-            }
+            } // while
             setMinChar(1);
             key = 0;
             break;
-
         case 4: // Salir
             tcsetattr(FD_STDIN, TCSANOW, &t_old);
             exit(EXIT_SUCCESS);
 
         default: // Opcion invalida
             puts("Opción inválida");
-        }
-    }
+
+        }                                 // Switch choice
+    }                                     // while(1)
     tcsetattr(FD_STDIN, TCSANOW, &t_old); // actualiza con los valores previos
     return 0;
 }
