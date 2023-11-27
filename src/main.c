@@ -163,12 +163,13 @@ int main(void)
             int firstEntry = 1;
             while (key != ENTER)
             {
-                int reading = analogRead(AD_BASE);
+                unsigned int reading = analogRead(AD_BASE);
+                reading = (reading / 32768) * 1000;
                 if ((reading != delays) || firstEntry)
                 {
                     system("clear");
                     puts("Definir Velocidad Inicial (Enter para Salir)");
-                    delays = (unsigned int)(((float)reading / 32768) * 1000);
+                    delays = reading;
                     printf("Velocidad Inicial: %d ms\n", delays);
                     firstEntry = 0;
                 }
